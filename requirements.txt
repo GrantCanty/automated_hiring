@@ -1,0 +1,6 @@
+guardrails-ai
+mistralai
+openai
+streamlit
+streamlit[auth]
+bcrypt
