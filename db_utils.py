@@ -1,4 +1,5 @@
 import streamlit as st
+import uuid
 
 # example record
 mock_users = {
@@ -42,5 +43,24 @@ def add_user_to_db(username, password, role, company):
         db_data = {'username': username, 'password_hash': password, 'role': r_lower, 'company': company}
         mock_users[u_lower] = db_data
 
-def update_user_profile(username, first_name, last_name, cv):
-    return
+def update_user_profile(username, first_name, last_name, cv, cv_name):
+    user = get_user_from_db(username)
+    user['first_name'] = first_name
+    user['last_name'] = last_name
+    user_cv = user.get('cv', [])
+
+    if cv is not None:
+        data = {'id': uuid.uuid1(), 'name': cv_name, 'content': cv}
+        user_cv.append(data)
+    
+    user['cv'] = user_cv
+    return True
+
+def remove_cv_from_db(username, cv_name):
+    user_info = get_user_from_db(username)
+    cvs = user_info.get('cv')
+    remaining_cvs = [c for c in cvs if c['name'] != cv_name]
+    user_info['cv'] = remaining_cvs
+
+    mock_users[username.lower()] = user_info
+    return True

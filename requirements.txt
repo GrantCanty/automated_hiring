@@ -4,3 +4,5 @@ openai
 streamlit
 streamlit[auth]
 bcrypt
+unstructured[pdf]
+uuid
