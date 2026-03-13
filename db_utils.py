@@ -1,14 +1,25 @@
 import streamlit as st
 
-# fake record
+# example record
 mock_users = {
         "alice": {
+            'id': 0,
             "username": "alice",
-            "password_hash": "password123", # Plain text for testing ONLY
+            "password_hash": "password123",
             "role": "applicant",
-            "company": None
+            "company": None,
+            "first_name": "Alice",
+            "last_name": "Smith"
+        },
+        'jeff': {
+            'id': 2,
+            'username': 'jeff',
+            "password_hash": "password123",
+            "role": "applicant",
+            "company": None,
         },
         "bob": {
+            'id': 1,
             "username": "bob",
             "password_hash": "admin789", 
             "role": "recruiter",
@@ -30,3 +41,6 @@ def add_user_to_db(username, password, role, company):
         r_lower = role.lower()
         db_data = {'username': username, 'password_hash': password, 'role': r_lower, 'company': company}
         mock_users[u_lower] = db_data
+
+def update_user_profile(username, first_name, last_name, cv):
+    return

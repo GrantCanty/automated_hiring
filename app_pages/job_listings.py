@@ -1,9 +1,10 @@
 import streamlit as st
 import jobs
+import datetime
 
 
 def job_listings():
-    if st.session_state.company == None:
+    if st.session_state.company == None and st.session_state.role == 'applicant':
         st.title("Jobs")
         for job in jobs.jobs:
             with st.container(border=True):
@@ -12,6 +13,14 @@ def job_listings():
                 with col1:
                     st.subheader(job['title'])
                     st.write(job['company'])
+                    st.write(f'Start date: {job["start_date"]}')
+                    
+                    date_posted = job['date_posted']
+                    today = datetime.date.today()
+                    delta =  today - date_posted
+                    days_ago = 'Today' if delta.days == 0 else f'{delta.days} ago' if delta.days <= 6 else date_posted.isoformat()
+                    st.write(f'Posted: {days_ago}')
+
                     st.write(job['description'])
                 
                 with col2:
