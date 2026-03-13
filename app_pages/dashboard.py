@@ -23,7 +23,6 @@ def dashboard():
         st.title(f'Welcome {name}')
 
         st.subheader("Your Candidate Profile")
-        print(f'get user is: {user_info.get("cv")}')
         if len(user_info.get('cv', [])) > 0:
             st.subheader('Your CV(s)')
             cv_names = [cv['name'] for cv in user_info.get('cv')]
@@ -59,9 +58,6 @@ def dashboard():
 
             if submit:
                 cv_text, cv_file_name = load_pdf(cv_file)
-
-                print(f'cv_text: {cv_text}')
-                print(f'cv_text_len: {len(cv_text)}')
 
                 # 3. Save to Postgres
                 success = update_user_profile(

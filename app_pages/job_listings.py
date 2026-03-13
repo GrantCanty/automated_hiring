@@ -3,6 +3,7 @@ import jobs
 import datetime
 from utils import load_pdf
 from db_utils import get_user_from_db
+from applications import apply
 import time
 
 @st.dialog("Apply to job")
@@ -14,10 +15,9 @@ def apply_to_job(job ):
         cvs = user_info.get('cv', [])
         cv_names = [cv['name'] for cv in cvs]
 
-        st.selectbox('Choose your CV', cv_names)
+        selected_cv = st.selectbox('Choose your CV', cv_names)
 
         lom_file = st.file_uploader("Upload your Letter of Motivation (PDF only)", type=["pdf"])
-        #lom_text , _ = load_pdf(lom_file)
 
         if st.form_submit_button("Send Application"):
             if not cv_names:
@@ -29,12 +29,14 @@ def apply_to_job(job ):
                 lom_text, _ = load_pdf(lom_file)
                 
                 # Logic to save application to DB goes here
-                # save_application(username, job['id'], selected_cv, lom_text)
-                
-                st.success("Application Sent!")
-                time.sleep(.5)
-                st.session_state.apply_view = False
-                st.rerun()
+                resp = apply(user_info['id'], job['id'], lom_text, selected_cv)
+                if resp:
+                    st.success("Application Sent!")
+                    time.sleep(.5)
+                    st.session_state.apply_view = False
+                    st.rerun()
+                else:
+                    st.error("Error saving application")
 
 def job_listings():
     if st.session_state.company == None and st.session_state.role == 'applicant':
@@ -59,7 +61,6 @@ def job_listings():
                 with col2:
                     if st.button('Apply', key=f"apply_{job['id']}"):
                         st.session_state.apply_view = True
-                        #apply_for_job(job['id'])
                         apply_to_job(job)
 
 
