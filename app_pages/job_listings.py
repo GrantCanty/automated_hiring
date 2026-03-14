@@ -5,6 +5,9 @@ from utils import load_pdf
 from db_utils import get_user_from_db
 from applications import apply
 import time
+import threading
+from ai_scripts import grade_applicant
+from applications import get_job_and_applicant_info
 
 @st.dialog("Apply to job")
 def apply_to_job(job ):
@@ -29,8 +32,17 @@ def apply_to_job(job ):
                 lom_text, _ = load_pdf(lom_file)
                 
                 # Logic to save application to DB goes here
-                resp = apply(user_info['id'], job['id'], lom_text, selected_cv)
+                final_cv = [cv['content'] for cv in cvs if cv['name'] == selected_cv]
+                resp, id = apply(username, job['id'], lom_text, final_cv)
+
                 if resp:
+                    app_info = get_job_and_applicant_info(id)
+                    thread = threading.Thread(
+                        target=grade_applicant.grade_applicant,
+                        args=(app_info,)
+                    )
+                    thread.start()
+
                     st.success("Application Sent!")
                     time.sleep(.5)
                     st.session_state.apply_view = False

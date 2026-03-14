@@ -18,4 +18,4 @@ def load_pdf(file):
                 if i -1 < len(blocks):
                     text += ' '
     
-    return file_name, file_name
+    return text, file_name

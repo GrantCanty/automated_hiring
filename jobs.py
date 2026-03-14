@@ -36,3 +36,6 @@ Implement secure authentication and authorization protocols (OAuth2, JWT).
 
 Build and document internal APIs that provide a seamless interface for the frontend and mobile teams."""},
 ]
+
+def get_job_info(id):
+    return [job for job in jobs if job['id'] == id][0]
