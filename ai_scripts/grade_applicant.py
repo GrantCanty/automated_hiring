@@ -30,9 +30,10 @@ class ApplicantGradeScore(BaseModel):
     applicant_grade: float = Field(description="score candidate between 0-10. 0 is bad and 10 is good. Take into account all context from the job listing, cv, question, and answer")
 
 def grade_applicant(application_info):
-    print(f'cv used when applying: {application_info["cv"]}')
+    #print(f'cv used when applying: {application_info["cv"]}')
     raw_cv_summary, cv_summary, summary_rest = get_cv_summary(mistral_chat_wrapper, CVSummarySchema, application_info['cv'])
-    
+    print('summarized cv')
+
     # set up system prompt
     system_prompt=f"You are a recruiter for {application_info['company']} and are evaluating a candidate for an AI/ML position. Grade the candidate from 0 to 10, with 0 being low and 10 being high"
 
@@ -55,6 +56,7 @@ def grade_applicant(application_info):
     raw_score, validated_score, *rest = guard(
         llm_api=mistral_chat_wrapper,
         model=MODEL)
+    print('graded applicant')
     
     save_applicant_grade(application_info['id'], validated_score['applicant_grade'])
 
