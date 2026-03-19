@@ -42,3 +42,12 @@ def save_applicant_grade(id, score):
         if applications[i]['id'] == id:
             applications[i]['grade'] = score
             break
+
+def get_applicants_per_company(company_name):
+    applicant_count = 0
+    apps = applications.copy()
+    for app in apps:
+        if app['company'] == company_name:
+            applicant_count += 1
+    
+    return applicant_count

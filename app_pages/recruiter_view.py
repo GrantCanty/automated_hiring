@@ -11,8 +11,11 @@ def show_applicants_list():
             
             with col1:
                 st.subheader(app_info['name'])
+                st.write(f"Role: {app_info['job_title']} - {app_info['company']}")
                 if app_info.get('grade', None) is not None:
                     st.write(f"Grade: {app_info['grade']}")
+                else:
+                    st.info('Grading in progress...')
 
 def view_applicants():
     st.title("Applicants")
