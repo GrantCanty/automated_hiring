@@ -8,7 +8,7 @@ applications = []
 
 def apply(username, job_id, letter_of_motivation, cv):
     id = uuid.uuid1()
-    app = {'id': id, 'username': username, 'job_id': job_id, 'lom': letter_of_motivation, 'cv': cv}
+    app = {'id': id, 'username': username, 'job_id': job_id, 'lom': letter_of_motivation, 'cv': cv, 'status': 'In Progress'}
     applications.append(app)
     return True, id
 
@@ -33,7 +33,7 @@ def get_job_and_applicant_info(id):
         }
     
     if grade is not None:
-        data['grade'] = grade
+        data['grade'] = float(grade)
     
     return data
 
@@ -47,7 +47,15 @@ def get_applicants_per_company(company_name):
     applicant_count = 0
     apps = applications.copy()
     for app in apps:
-        if app['company'] == company_name:
+        job_info = get_job_info(app['job_id'])
+        if job_info['company'] == company_name:
             applicant_count += 1
+
+def filter_func_job_id(app_job_id, job_id):
+    return app_job_id == job_id
+
+
+def get_applicants_by_job_id(job_id):
+    filtered_apps = filter(lambda app: filter_func_job_id(app['job_id'], job_id), applications)
     
-    return applicant_count
+    return list(filtered_apps)

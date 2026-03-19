@@ -39,3 +39,14 @@ Build and document internal APIs that provide a seamless interface for the front
 
 def get_job_info(id):
     return [job for job in jobs if job['id'] == id][0]
+
+def get_jobs_for_a_company(company_name):
+    company_jobs = []
+    job_listings = jobs.copy()
+    
+    for job in job_listings:
+        if job['company'] == company_name:
+            company_jobs.append(job)
+    
+    return company_jobs
+        

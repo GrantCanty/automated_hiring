@@ -35,18 +35,19 @@ def grade_applicant(application_info):
     print('summarized cv')
 
     # set up system prompt
-    system_prompt=f"You are a recruiter for {application_info['company']} and are evaluating a candidate for an AI/ML position. Grade the candidate from 0 to 10, with 0 being low and 10 being high"
+    system_prompt=f"You are a recruiter for {application_info['company']} and are evaluating a candidate for a {application_info['job_title']} position. Grade the candidate from 0 to 10, with 0 being low and 10 being high. Check that the candidate matches the needs of the jobs, the name on the CV matches the candidate's name, the letter of motivation is for the company, and that the candidate has the necessary experience needed."
 
     # give context about the user and job
     user_context = f"""
         job title: {application_info['job_title']}\n
         job description: {application_info['job_description']}\n
         candidate cv: {cv_summary}\n
+        candidate name: {application_info['name']}\n
         letter of motivation: {application_info['letter_of_motivation']}"""
     
     messages=[
         {"role": "system", "content": system_prompt},
-        {"role": "user", "content": user_context}
+        {"role": "user", "content": user_context},
     ]
 
     # force output to a schema
@@ -55,7 +56,8 @@ def grade_applicant(application_info):
     # validate output to schmea. failure cases
     raw_score, validated_score, *rest = guard(
         llm_api=mistral_chat_wrapper,
-        model=MODEL)
+        model=MODEL,
+        temperature=0)
     print('graded applicant')
     
     save_applicant_grade(application_info['id'], validated_score['applicant_grade'])
