@@ -83,3 +83,13 @@ Recruiting teams and hiring managers at small to mid-sized companies who manage 
    3. **Prompt version tracking** — system prompts should be versioned (e.g., stored with a `v1`, `v2` label) so that changes can be correlated with changes in output quality
    4. **Offline evals** — a small golden set of CVs with known expected grades can be used to catch regressions when prompts or models change
    5. **Guardrails failure rate monitoring** — tracking how often schema validation fails is a leading indicator of prompt drift or model degradation
+
+### 5. Known Risks & Mitigations
+
+| Risk | Mitigation |
+|---|---|
+| **Biased grading / unfair candidate ranking** | CVs are summarised before grading to produce a normalised input, reducing the influence of formatting, name, or writing style on scores. Recruiters see raw grades but make all final decisions. |
+| **Prompt injection via CV** | CV summarisation acts as a sanitisation step — instructions embedded in a candidate's resume are unlikely to survive summarisation intact before reaching downstream prompts. |
+| **PII leakage through LLM** | Raw CVs are never passed directly to the grading prompt. Summarisation reduces the personal data surface area sent to the model. Mistral processes all data within EU infrastructure under GDPR. |
+| **App crash on AI failure** | Email drafts are cached in session state — if generation fails mid-session the recruiter is not left with a broken form. Full error handling and timeouts are a planned improvement. |
+| **Model hallucination in emails** | Guardrails AI enforces a strict output schema (`EmailSchema`) on every generation. All emails are reviewed and editable by a recruiter before sending. |
