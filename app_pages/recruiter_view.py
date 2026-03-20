@@ -2,10 +2,28 @@ import streamlit as st
 import applications
 import jobs
 from db_utils import get_user_from_db
+from ai_scripts import create_email
+
 
 def sortFunc(app):
     grade = app.get('grade')
     return grade if grade is not None else -1
+
+def filterFunc(app):
+    return app['status'] == 'In Progress'
+
+@st.dialog("Email candidate")
+def schedule_interview(app_info):
+    _, email, _ = create_email.generate_email(app_info)
+    with st.form("profile_form"):
+        
+        st.subheader(f"Email Applicant")
+
+        subject = st.text_input("Subject", value=email['subject'])
+        body = st.text_area('Email', value=email['body'])
+
+        if st.form_submit_button("Send"):
+            st.rerun()
 
 @st.fragment(run_every="2s")
 def show_applicants_list():
@@ -14,26 +32,35 @@ def show_applicants_list():
     company_jobs = jobs.get_jobs_for_a_company(user_info['company'])
     for job in company_jobs:
         with st.container(border=True):
-            st.subheader(f"Applicants for {job['title']}")
-
-            #for application in applications.applications:
-            #    app_info = applications.get_job_and_applicant_info(application['id'])
-            #    app_info.sort(key=sortFunc, reverse=True)
             apps = applications.get_applicants_by_job_id(job['id'])
-            apps.sort(key=sortFunc, reverse=True)
-            for app in apps:                
-                app_info = applications.get_job_and_applicant_info(app['id'])
+            filtered_apps = filter(filterFunc, apps)
+            filtered_apps = list(filtered_apps)
+            
+            if len(filtered_apps) == 0:
+                st.subheader("No Applicants")
+            else:
+                st.subheader(f"Applicants for {job['title']}")
                 
-                with st.container(border=True):
-                    col1, col2 = st.columns([3, 1])
+                filtered_apps.sort(key=sortFunc, reverse=True)
+                for app in filtered_apps:
+                    app_info = applications.get_job_and_applicant_info(app['id'])
                     
-                    with col1:
-                        st.subheader(app_info['name'])
-                        st.write(f"Role: {app_info['job_title']} - {app_info['company']}")
-                        if app_info.get('grade', None) is not None:
-                            st.write(f"Grade: {app_info['grade']}")
-                        else:
-                            st.info('Grading in progress...')
+                    with st.container(border=True):
+                        col1, col2 = st.columns([3, 1])
+                        
+                        with col1:
+                            st.subheader(app_info['name'])
+                            st.write(f"Role: {app_info['job_title']} - {app_info['company']}")
+                            if app_info.get('grade', None) is not None:
+                                st.write(f"Grade: {app_info['grade']}")
+                            else:
+                                st.info('Grading in progress...')
+                        
+                        with col2:
+                            if st.button("Schedule Interview"):
+                                schedule_interview(app_info)
+                            if st.button("Reject"):
+                                pass
 
 def view_applicants():
     st.title("Applicants")
