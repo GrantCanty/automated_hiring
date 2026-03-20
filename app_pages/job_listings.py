@@ -50,6 +50,33 @@ def apply_to_job(job ):
                 else:
                     st.error("Error saving application")
 
+@st.dialog("Edit job")
+def edit_job(job ):
+    st.subheader(job["title"])
+    with st.form("profile_form"):
+        job_title = st.text_input("First Name", value=job.get('title', ""))
+        job_description = st.text_area("Last Name", value=job.get('description', ""))
+
+        submit = st.form_submit_button("Save Changes")
+        if submit:
+            jobs.edit_job(job['id'], job_title, job_description)
+            st.rerun()
+
+@st.dialog("Create job")
+def create_job():
+    st.subheader("Job Info")
+    with st.form("profile_form"):
+        job_title = st.text_input("Job Title")
+        start_date = st.date_input("Start Date")
+        salary = st.number_input("Salary")
+        job_description = st.text_area("Job Description")
+
+        job = {'title': job_title, 'company': st.session_state.company, 'salary': salary, 'start_date': start_date, 'description': job_description}
+        submit = st.form_submit_button("Save Changes")
+        if submit:
+            jobs.create_job(job)
+            st.rerun()
+
 def job_listings():
     if st.session_state.company == None and st.session_state.role == 'applicant':
         st.title("Jobs")
@@ -78,7 +105,8 @@ def job_listings():
 
     else:
         st.title("Your Jobs")
-        st.button("New job")
+        if st.button("New job"):
+            create_job()
         j = list(filter(lambda c: c['company'] in st.session_state.company, jobs.jobs ))
         for job in j:
             with st.container(border=True):
@@ -92,6 +120,7 @@ def job_listings():
                 with col2:
                     if st.button('Edit', key=f"apply_{job['id']}"):
                         #apply_for_job(job['id'])
+                        edit_job(job)
                         return
 
 

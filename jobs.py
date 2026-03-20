@@ -1,5 +1,6 @@
 import streamlit as st
 import datetime
+import uuid
 
 jobs = [
     {'id': 0, 'title': "AI Engineer", 'company': 'Microsoft', 'salary': 95000, 'start_date': datetime.date(2026, 4, 12), 'date_posted': datetime.date(2026, 3, 6), 'description': """Overview: We are seeking an AI Engineer to bridge the gap between machine learning research and scalable production applications. You will focus on integrating Large Language Models (LLMs) into our core products to automate complex workflows.
@@ -50,3 +51,18 @@ def get_jobs_for_a_company(company_name):
     
     return company_jobs
         
+
+def edit_job(job_id, title, description):
+    for job in jobs:
+        if job['id'] == job_id:
+            job['title'] = title
+            job['description'] = description
+
+def create_job(job):
+    id = uuid.uuid1()
+    post_date = datetime.date.today()
+
+    job['id'] = id
+    job['date_posted'] = post_date
+
+    jobs.append(job)
