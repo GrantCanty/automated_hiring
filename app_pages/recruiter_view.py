@@ -68,6 +68,7 @@ def show_applicants_list():
                             if st.button("Schedule Interview", key=job_id+"1"):
                                 schedule_interview(app_info, 'interview')
                             if st.button("Reject", key=job_id+"2"):
+                                print("pressed reject button")
                                 schedule_interview(app_info, "reject")
                                 pass
 
