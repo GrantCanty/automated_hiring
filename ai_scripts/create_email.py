@@ -12,6 +12,8 @@ MISTAL_API_KEY=os.getenv('MISTRAL_API_KEY')
 MODEL=os.getenv("MISTRAL_MODEL")
 #model="mistral-large-latest"
 
+system_prompts = {'interview': ''}
+
 mis_client = OpenAI(
     api_key=MISTAL_API_KEY,
     base_url="https://api.mistral.ai/v1"
@@ -30,9 +32,14 @@ class EmailSchema(BaseModel):
     subject: str = Field(description="Subject line of email")
     body: str = Field(description='Body of email')
 
-def generate_email(app_info):
+def generate_email(app_info, decision):
   schedule_link = 'https://www.scheduleme.com/HSBC/round-1/18523ab4jmp273sd4a8s'
-  system_prompt = f"You are part of the recruiting team at {app_info['company']}. This candidate has been accepted for a 1 hour long first round interview. Outline the topic(s) and general flow of the interview for the recruiter to cover."
+  system_prompts = {
+    "interview": f"You are part of the recruiting team at {app_info['company']}. This candidate has been accepted for a 1 hour long first round interview. Outline the topic(s) and general flow of the interview for the recruiter to cover.",
+    "reject": f"you are part of the recruiting team at {app_info['company']}. This candidate has been rejected from the position. List a few reasons about why they are not a good fit"
+    }
+
+  system_prompt = system_prompts[decision]
   user_prompt = f"job posting: {app_info['job_description']}\ncandidate resume: {app_info['cv']}"
 
   messages = [

@@ -13,13 +13,12 @@ def filterFunc(app):
     return app['status'] == 'In Progress'
 
 @st.dialog("Email candidate")
-def schedule_interview(app_info):
-    # _, email, _ = create_email.generate_email(app_info)
+def schedule_interview(app_info, hiring_decision):
     cache_key = f"email_draft_{app_info['id']}"
 
     if cache_key not in st.session_state:
         with st.spinner("Generating email..."):
-            _, email, _ = create_email.generate_email(app_info)
+            _, email, _ = create_email.generate_email(app_info, hiring_decision)
             st.session_state[cache_key] = email
 
     email = st.session_state[cache_key]
@@ -52,7 +51,6 @@ def show_applicants_list():
                 filtered_apps.sort(key=sortFunc, reverse=True)
                 for app in filtered_apps:
                     app_info = applications.get_job_and_applicant_info(app['id'])
-                    #executor.submit(create_email.generate_email, app_info)
                     
                     with st.container(border=True):
                         col1, col2 = st.columns([3, 1])
@@ -66,9 +64,11 @@ def show_applicants_list():
                                 st.info('Grading in progress...')
                         
                         with col2:
-                            if st.button("Schedule Interview"):
-                                schedule_interview(app_info)
-                            if st.button("Reject"):
+                            job_id = f"{app_info['id']}"
+                            if st.button("Schedule Interview", key=job_id+"1"):
+                                schedule_interview(app_info, 'interview')
+                            if st.button("Reject", key=job_id+"2"):
+                                schedule_interview(app_info, "reject")
                                 pass
 
 def view_applicants():
