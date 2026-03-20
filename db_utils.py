@@ -37,7 +37,9 @@ mock_users = {
             "password_hash": "admin789", 
             "role": "recruiter",
             "company": 'Google',
-            "email": "bob_tran@google.com"
+            "email": "bob_tran@google.com",
+            "first_name": "Bob",
+            "last_name": "Tran"
         }
     }
 
@@ -67,7 +69,7 @@ def update_user_profile(username, first_name, last_name, email, cv, cv_name):
         data = {'id': uuid.uuid1(), 'name': cv_name, 'content': cv}
         user_cv.append(data)
         user['cv'] = user_cv
-        
+
     return True
 
 def remove_cv_from_db(username, cv_name):

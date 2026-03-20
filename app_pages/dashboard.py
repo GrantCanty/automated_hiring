@@ -86,12 +86,6 @@ def dashboard():
             name = user_info['first_name']
         
         st.title(f'Welcome {name}')
-
-        app_count = get_applicants_per_company(user_info['company'])
-        if app_count == 1:
-            st.subheader(f"You have {app_count} applicant")
-        else:
-            st.subheader(f"You have {app_count} total applicants")
         
         with st.form("profile_form"):
             st.subheader(f"Update your profile")

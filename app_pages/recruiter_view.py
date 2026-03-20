@@ -14,16 +14,24 @@ def filterFunc(app):
 
 @st.dialog("Email candidate")
 def schedule_interview(app_info):
-    _, email, _ = create_email.generate_email(app_info)
-    with st.form("profile_form"):
+    # _, email, _ = create_email.generate_email(app_info)
+    cache_key = f"email_draft_{app_info['id']}"
+
+    if cache_key not in st.session_state:
+        with st.spinner("Generating email..."):
+            _, email, _ = create_email.generate_email(app_info)
+            st.session_state[cache_key] = email
+
+    email = st.session_state[cache_key]
         
-        st.subheader(f"Email Applicant")
+    st.subheader(f"Email Applicant")
 
-        subject = st.text_input("Subject", value=email['subject'])
-        body = st.text_area('Email', value=email['body'])
+    subject = st.text_input("Subject", value=email['subject'])
+    body = st.text_area('Email', value=email['body'])
 
-        if st.form_submit_button("Send"):
-            st.rerun()
+    if st.button("Send"):
+        del st.session_state[cache_key]
+        st.rerun()
 
 @st.fragment(run_every="2s")
 def show_applicants_list():
@@ -44,6 +52,7 @@ def show_applicants_list():
                 filtered_apps.sort(key=sortFunc, reverse=True)
                 for app in filtered_apps:
                     app_info = applications.get_job_and_applicant_info(app['id'])
+                    #executor.submit(create_email.generate_email, app_info)
                     
                     with st.container(border=True):
                         col1, col2 = st.columns([3, 1])

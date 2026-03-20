@@ -78,6 +78,7 @@ def job_listings():
 
     else:
         st.title("Your Jobs")
+        st.button("New job")
         j = list(filter(lambda c: c['company'] in st.session_state.company, jobs.jobs ))
         for job in j:
             with st.container(border=True):
