@@ -14,7 +14,8 @@ def filterFunc(app):
 
 @st.dialog("Email candidate")
 def schedule_interview(app_info, hiring_decision):
-    cache_key = f"email_draft_{app_info['id']}"
+    cache_key = f"email_draft_{app_info['id']}_{hiring_decision}"
+    print(st.session_state.get(cache_key))
 
     if cache_key not in st.session_state:
         with st.spinner("Generating email..."):
@@ -30,10 +31,16 @@ def schedule_interview(app_info, hiring_decision):
 
     if st.button("Send"):
         del st.session_state[cache_key]
+        st.session_state.open_dialog = None
+        st.session_state.dialog_app_info = None
         st.rerun()
 
 @st.fragment(run_every="2s")
 def show_applicants_list():
+    if "open_dialog" not in st.session_state:
+        st.session_state.open_dialog = None
+        st.session_state.dialog_app_info = None
+
     user_info = get_user_from_db(st.session_state.username)
 
     company_jobs = jobs.get_jobs_for_a_company(user_info['company'])
@@ -66,11 +73,20 @@ def show_applicants_list():
                         with col2:
                             job_id = f"{app_info['id']}"
                             if st.button("Schedule Interview", key=job_id+"1"):
+                                st.session_state.open_dialog = "interview"
+                                st.session_state.dialog_app_info = app_info
                                 schedule_interview(app_info, 'interview')
                             if st.button("Reject", key=job_id+"2"):
                                 print("pressed reject button")
+                                st.session_state.open_dialog = "reject"
+                                st.session_state.dialog_app_info = app_info
                                 schedule_interview(app_info, "reject")
-                                pass
+    
+    
+    if st.session_state.open_dialog == "interview":
+        schedule_interview(st.session_state.dialog_app_info, "interview")
+    elif st.session_state.open_dialog == "reject":
+        schedule_interview(st.session_state.dialog_app_info, "reject")
 
 def view_applicants():
     st.title("Applicants")

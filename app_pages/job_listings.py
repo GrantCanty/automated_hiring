@@ -54,8 +54,8 @@ def apply_to_job(job ):
 def edit_job(job ):
     st.subheader(job["title"])
     with st.form("profile_form"):
-        job_title = st.text_input("First Name", value=job.get('title', ""))
-        job_description = st.text_area("Last Name", value=job.get('description', ""))
+        job_title = st.text_input("Job Title", value=job.get('title', ""))
+        job_description = st.text_area("Description", value=job.get('description', ""))
 
         submit = st.form_submit_button("Save Changes")
         if submit:

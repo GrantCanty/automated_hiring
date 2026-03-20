@@ -61,6 +61,7 @@ def generate_email(app_info, decision):
         {'role': 'system', 'content': system_prompt},
         {'role': 'user', 'content': user_prompt}
     ]
+    print(decision, '\n', messages)
 
     guard = gr.Guard.for_pydantic(output_class=EmailSchema, messages=messages)
 
